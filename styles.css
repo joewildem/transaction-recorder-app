@@ -410,6 +410,7 @@ input::-webkit-inner-spin-button {
 /* Botón */
 .button-stack{
     padding-inline: 16px;
+    margin-bottom: 32px;
 }
 
 .primary-button{
