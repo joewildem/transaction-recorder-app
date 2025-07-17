@@ -1,0 +1,451 @@
+:root {
+  /* Background */
+  --background-dark: #161616;
+  --background-cards: #222222;
+  --background-card-active: #3B3B3B;
+  --overlay: rgba(2, 2, 2, 0.7);
+
+  /* Text */
+  --body-white: #EBEBEB;
+  --system-1: #888888;
+
+  /* Principal */
+  --blue-enabled: #0066BD;
+  --blue-hover: #3D91D6;
+
+  /* Categories / flexible */
+  --yellow-medium: #BF8A17;
+
+  /* Categories / savings */
+  --pink-medium: #D84A94;
+
+  /* Categories / fixed */
+  --red-medium: #E55C61;
+
+  /* Categories / income */
+  --green-medium: #11742F;
+
+  /* Categories / loans */
+  --brown-medium: #8C5B2A;
+}
+
+/* Contenedor */
+
+/* Asegura que el body y html ocupen todo el espacio disponible */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--background-dark);
+}
+
+/* El contenedor principal de la app */
+.container {
+  min-height: 375px;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 0;
+  box-sizing: border-box;
+  background-color: var(--background-dark);
+  margin: 0;
+}
+
+/* Evita scroll lateral en móvil */
+body {
+  overflow-x: hidden;
+}
+
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;        /* Centra verticalmente */
+  justify-content: center;    /* Centra horizontalmente el contenido principal */
+  padding: 16px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  position: relative;
+  height: 40px;
+  max-height: 56px;
+}
+
+.header-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--body-white);
+  margin: 0;
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.header-icon {
+  position: absolute;
+  right: 16px;
+  font-size: 1.2rem;
+  color: white;
+}
+
+/* Input */
+.amount-input{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+    
+}
+
+.amount-input:focus-within {
+  border-color: var(--blue-enabled);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 24px; /* Agrega espacio a izquierda y derecha */
+  
+}
+
+.data-input{
+    display: flex;
+    align-items: center;
+    
+}
+
+.prefix-amount{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 24px;
+    color: var(--blue-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+}
+
+.amount-input input{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color:var(--body-white);
+    background: none;
+    border: none;
+    field-sizing: content;
+    
+}
+
+*:focus{
+    outline: none;  
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+
+.clear-button{
+    color: var(--system-1);
+    display: flex;
+    background: none;
+    border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+    position: absolute;
+    right: 24px;
+}
+
+
+/* Chips transactions */
+.transaction-selection{
+    padding: 16px;
+    
+}
+
+.type{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: auto;
+    height: 48px;
+    padding-inline: 16px;
+    background: var(--background-cards);
+    border-radius: 50px;
+    gap: 4px;
+}
+
+.chip{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: auto;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--body-white);
+    font-weight: 500;
+    padding: 4px;
+    list-style-type: none;
+    width: 100%;
+    height: 60%;
+    border-radius: 50px;
+}
+
+.chip:hover{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.chip:active{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.more{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.more-text{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--system-1);
+
+}
+
+.more-icon{
+    color: var(--system-1);
+    display: flex;
+
+}
+
+/* Detalles de la transaccion */
+
+    /* Tabs Fixed y Flexible */  
+    
+.expenses-types{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.fixed-tab{
+    background: var(--background-cards);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--red-medium);
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    border-radius: 8px;
+}
+
+.fixed-tab:hover{
+    background: var(--red-medium);
+    color: var(--body-white);
+    transition: 0.2s ease;
+}
+
+.flexible-tab{
+    background: var(--background-cards);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--yellow-medium);
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    border-radius: 8px;
+}
+
+.flexible-tab:hover{
+    background: var(--yellow-medium);
+    color: var(--body-white);
+    transition: 0.2s ease;
+}
+
+
+    /* Tabs origen y destino */ 
+.transfer-types{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.from, .to{
+    background: var(--background-cards);
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    height: 56px;
+    border-radius: 8px;
+    gap: 2px;
+}
+
+.from:hover, .to:hover{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.from:active, .to:active{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.from-name, .to-name{
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--system-1);
+}
+
+.from-selection, .to-selection{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--body-white);
+
+}
+
+
+
+    /* Lista de selecciones */  
+.settings {
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  padding: 16px;
+  margin-bottom: 8px;
+}
+
+.selection-card {
+  width: auto;             /* Ocupa todo el ancho del contenedor */
+  height: 64px;
+  background-color: var(--background-cards);
+  list-style-type: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 12px;
+  gap: 8px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.selection-card:hover{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.selection-card:active{
+    background: var(--background-card-active);
+    transition: 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.info{
+    display: flex;
+    height: 48px;
+    align-items: center;
+    gap: 12px;
+
+}
+
+.info-icon{
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    background-color: var(--background-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--body-white);
+}
+
+.info-name{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--body-white);
+}
+
+.selection{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.selection-name{
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--system-1);
+
+}
+
+.selection-icon{
+    color: var(--body-white);
+    display: flex;
+}
+
+/* Botón */
+.button-stack{
+    padding-inline: 16px;
+}
+
+.primary-button{
+    background: var(--blue-enabled);
+    border-radius: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    gap: 8px;
+    height: 56px;
+    width: 100%;
+}
+
+.primary-button:hover{
+    background: var(--blue-hover);
+    cursor: pointer;
+    transition: 0.4s ease-in-out;
+}
+
+.button-label{
+    color: var(--body-white);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+
+.button-icon{
+    color: var(--body-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
