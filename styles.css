@@ -93,15 +93,17 @@ body {
     padding: 16px;
     border-bottom: 2px solid transparent;
     transition: border-color 0.2s ease;
+    margin-inline: 24px;
     
 }
 
 .amount-input:focus-within {
   border-color: var(--blue-enabled);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-inline: 24px; /* Agrega espacio a izquierda y derecha */
+  flex-direction: column;
+  width: auto;
+  flex: 1;
+  margin-inline: 24px;
   
 }
 
@@ -255,6 +257,7 @@ input::-webkit-inner-spin-button {
     background: var(--red-medium);
     color: var(--body-white);
     transition: 0.2s ease;
+    cursor: pointer;
 }
 
 .flexible-tab{
@@ -275,6 +278,7 @@ input::-webkit-inner-spin-button {
     background: var(--yellow-medium);
     color: var(--body-white);
     transition: 0.2s ease;
+    cursor: pointer;
 }
 
 
@@ -328,16 +332,24 @@ input::-webkit-inner-spin-button {
 
 
     /* Lista de selecciones */  
-.settings {
+.list-of-settings {
   display: flex;
   flex-direction: column;
   width: auto;
-  padding: 16px;
+  padding-inline: 16px;
   margin-bottom: 8px;
 }
 
+.settings{
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    
+}
+
 .selection-card {
-  width: auto;             /* Ocupa todo el ancho del contenedor */
+  width: auto;            /* Ocupa todo el ancho del contenedor */
   height: 64px;
   background-color: var(--background-cards);
   list-style-type: none;
@@ -449,4 +461,52 @@ input::-webkit-inner-spin-button {
     justify-content: center;
     align-items: center;
 
+}
+
+/* ------------------------------ MEDIA QUERIES ------------------------------ */
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1rem;
+  }
+
+  .amount-input input {
+    font-size: 28px;
+  }
+
+  .primary-button {
+    height: 48px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .header-title {
+    font-size: 1.2rem;
+  }
+
+  .amount-input input {
+    font-size: 34px;
+  }
+
+  .primary-button {
+    height: 56px;
+  }
+}
+
+@media (min-width: 769px) {
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .header-title {
+    font-size: 1.4rem;
+  }
+
+  .amount-input input {
+    font-size: 36px;
+  }
+
+  .primary-button {
+    height: 60px;
+  }
 }
