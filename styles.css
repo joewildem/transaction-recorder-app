@@ -110,6 +110,7 @@ body {
 .data-input{
     display: flex;
     align-items: center;
+    width: auto;
     
 }
 
@@ -470,7 +471,7 @@ input::-webkit-inner-spin-button {
   }
 
   .amount-input input {
-    font-size: 28px;
+    font-size: 40px;
   }
 
   .primary-button {
@@ -484,7 +485,7 @@ input::-webkit-inner-spin-button {
   }
 
   .amount-input input {
-    font-size: 34px;
+    font-size: 40px;
   }
 
   .primary-button {
