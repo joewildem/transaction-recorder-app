@@ -164,10 +164,11 @@ input::-webkit-inner-spin-button {
 /* Chips transactions */
 .transaction-selection{
     padding: 16px;
-    
+       
 }
 
-.type{
+/* 1. Actualizamos .type para quitar márgenes por defecto */
+.type {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -177,6 +178,16 @@ input::-webkit-inner-spin-button {
     background: var(--background-cards);
     border-radius: 50px;
     gap: 4px;
+    
+    /* NUEVO: Eliminamos el margen por defecto del navegador (que suele ser 16px) */
+    margin: 4; 
+    padding-top: 0;    /* Aseguramos que no haya padding extra */
+    padding-bottom: 0;
+}
+
+/* 2. Regla específica para separar un poco la segunda fila (si quieres menos de 8px, bájalo a 4px) */
+.secondary-types {
+    margin-top: 8px; 
 }
 
 .chip{
@@ -212,6 +223,7 @@ input::-webkit-inner-spin-button {
     align-items: center;
     justify-content: center;
     gap: 4px;
+    cursor: pointer;;
 }
 
 .more-text{
@@ -519,8 +531,9 @@ input::-webkit-inner-spin-button {
 }
 
 .active-chip {
-    background-color: var(--body-white) !important;
-    color: var(--background-dark) !important;
+    /* Cambio: Fondo azul y letra blanca */
+    background-color: var(--background-card-active) !important; 
+    color: var(--body-white) !important;
 }
 
 /* Estado activo para tabs (Fixed/Flex) */
@@ -656,51 +669,184 @@ input::-webkit-inner-spin-button {
     grid-column: auto; /* Resetear el span 2 anterior */
 }
 
-/* --- MODALES --- */
+/* --- MODALES RESPONSIVOS --- */
+
+/* Contenedor del contenido del modal */
 .modal-card {
-    background-color: var(--background-card-active);
-    width: 90%;
-    max-width: 400px;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 50%; /* Centrado visual */
-    transform: translateY(50%);
+    background-color: var(--background-cards);
+    display: flex;
+    flex-direction: column;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    z-index: 1001;
+    transition: transform 0.3s ease-out;
 }
 
+/* Header del modal: Centrado y sin bordes */
 .modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Centrar el título horizontalmente */
     align-items: center;
-    margin-bottom: 16px;
+    padding: 20px 24px 10px 24px; /* Ajuste de padding */
+    border-bottom: none; /* QUITA EL DIVIDER */
 }
 
+/* Ocultar la X (Close Icon) */
+.modal-close-icon {
+    display: none !important;
+}
+
+/* Ajuste del título */
 #modal-title {
     color: var(--body-white);
     margin: 0;
     font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
 }
 
-.modal-close-icon {
-    background: none;
-    border: none;
-    color: var(--system-1);
-    font-size: 20px;
-    cursor: pointer;
+/* Cuerpo del modal: Ahora se ajusta automáticamente al contenido */
+.modal-body {
+    padding: 8px 16px;
+    /* max-height: 60vh;  <-- ELIMINADO */
+    /* overflow-y: auto;  <-- ELIMINADO */
+    height: auto;      /* Dejamos que crezca libremente */
 }
 
+/* --- ESTILOS DE LOS ITEMS DE LA LISTA (Clean Text) --- */
 .modal-list-item {
-    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Texto a la izq, check a la der (si lo hubiera) */
+    padding: 16px;
     color: var(--body-white);
-    border-bottom: 1px solid #444;
+    border-bottom: 1px solid #333;
     cursor: pointer;
     font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background-color 0.2s;
 }
-.modal-list-item:last-child { border-bottom: none; }
-.modal-list-item:hover { background-color: #444; }
+
+.modal-list-item:hover {
+    background-color: var(--background-card-active);
+}
+
+.modal-list-item:last-child {
+    border-bottom: none;
+}
+
+/* Contenedor de la lista secundaria (Oculto por defecto) */
+.modal-secondary-list.hidden {
+    display: none;
+}
+
+/* Botón More dentro del modal */
+.modal-more-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 12px;
+    padding-bottom: 8px;
+    cursor: pointer;
+    gap: 4px;
+}
+
+.modal-more-text {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--system-1);
+}
+
+.modal-more-icon {
+    color: var(--system-1);
+    display: flex;
+    transition: transform 0.3s ease;
+}
+
+/* Cuadrito del Icono */
+.account-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+    flex-shrink: 0; /* Evita que se aplaste */
+}
+
+/* Texto del item */
+.account-info {
+    flex: 1; /* Ocupa el espacio restante */
+    display: flex;
+    flex-direction: column;
+}
+
+.account-name {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* --- MEDIA QUERIES PARA COMPORTAMIENTO --- */
+
+/* 1. ESTILO MÓVIL (Bottom Sheet) */
+@media (max-width: 480px) {
+    .modal-card {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        animation: slideUp 0.3s ease-out;
+        padding-bottom: 30px; /* Espacio para la barra de inicio de iPhone */
+    }
+}
+
+/* 2. ESTILO WEB (Modal Centrado) */
+@media (min-width: 481px) {
+    .modal-card {
+        position: relative; /* Para centrado relativo al overlay flex */
+        width: 400px;
+        border-radius: 24px;
+        /* El centrado ya lo hace el .overlay con flexbox (justify-center, align-items-center) */
+        /* Solo necesitamos quitar la animación de slideUp si quieres, o dejarla */
+    }
+    
+    /* Ajuste del overlay para web: Centrado total */
+    #modal-overlay {
+        align-items: center; /* En móvil era flex-end, aquí center */
+    }
+}
 
 /* Animación */
 @keyframes slideUp {
     from { transform: translateY(100%); }
     to { transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+    .modal-card {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        animation: slideUp 0.3s ease-out;
+        padding-bottom: 30px; 
+        
+        /* SEGURIDAD: Si la lista es gigante, que no pase del 85% de la pantalla */
+        max-height: 85vh; 
+        overflow-y: auto; /* Scroll solo si excede el 85% de la pantalla total */
+    }
 }
