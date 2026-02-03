@@ -511,3 +511,166 @@ input::-webkit-inner-spin-button {
     height: 60px;
   }
 }
+
+
+/* --- UTILIDADES --- */
+.hidden {
+    display: none !important;
+}
+
+.active-chip {
+    background-color: var(--body-white) !important;
+    color: var(--background-dark) !important;
+}
+
+/* Estado activo para tabs (Fixed/Flex) */
+.active-tab-fixed {
+    background-color: var(--red-medium) !important;
+    color: var(--body-white) !important;
+}
+.active-tab-flexible {
+    background-color: var(--yellow-medium) !important;
+    color: var(--body-white) !important;
+}
+
+/* --- CALCULADORA & MODALES OVERLAYS --- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Aparece desde abajo */
+    backdrop-filter: blur(2px);
+}
+
+/* --- CALCULADORA --- */
+.calculator-container {
+    background-color: var(--background-cards);
+    width: 100%;
+    max-width: 480px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 20px;
+    animation: slideUp 0.3s ease-out;
+}
+
+.calc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-inline: 8px;
+}
+
+#calc-preview {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 32px;
+    color: var(--body-white);
+    font-weight: 600;
+}
+
+.calc-btn-close {
+    background: none;
+    border: none;
+    color: var(--blue-enabled);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.calc-btn {
+    height: 60px;
+    border-radius: 12px;
+    border: none;
+    font-size: 24px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calc-btn.num {
+    background-color: #333;
+    color: var(--body-white);
+}
+
+.calc-btn.op {
+    background-color: var(--blue-enabled);
+    color: white;
+}
+
+.calc-btn.eq {
+    background-color: var(--green-medium);
+    color: white;
+    grid-column: span 1; 
+}
+
+.calc-btn.zero {
+    grid-column: span 1; 
+}
+
+.calc-btn:active {
+    opacity: 0.7;
+}
+
+/* --- MODALES --- */
+.modal-card {
+    background-color: var(--background-card-active);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 50%; /* Centrado visual */
+    transform: translateY(50%);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+#modal-title {
+    color: var(--body-white);
+    margin: 0;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.modal-close-icon {
+    background: none;
+    border: none;
+    color: var(--system-1);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.modal-list-item {
+    padding: 12px;
+    color: var(--body-white);
+    border-bottom: 1px solid #444;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+.modal-list-item:last-child { border-bottom: none; }
+.modal-list-item:hover { background-color: #444; }
+
+/* Animación */
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}

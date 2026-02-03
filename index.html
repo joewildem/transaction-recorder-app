@@ -34,6 +34,12 @@
             <li class="chip" type="button">Transfer</li>
         </ul>
 
+        <ul class="type secondary-types hidden" id="secondary-types">
+            <li class="chip" data-value="investment">Investment</li>
+            <li class="chip" data-value="savings">Savings</li>
+            <li class="chip" data-value="loans">Loans</li>
+        </ul>
+
         <div class="more" type="button">
             <span class="more-text" >More</span>
             <span class="more-icon">
@@ -127,7 +133,59 @@
 
   </div>
   
-  
+  <!-- Calculadora -->
+
+  <div id="calculator-overlay" class="overlay hidden">
+    <div class="calculator-container">
+        <div class="calc-header">
+            <span id="calc-preview">0</span>
+            <button id="calc-close" class="calc-btn-close">Done</button>
+        </div>
+        <div class="calc-grid">
+            <button class="calc-btn op" data-op="C">C</button>
+            <button class="calc-btn op" data-op="/">÷</button>
+            <button class="calc-btn op" data-op="*">×</button>
+            <button class="calc-btn op" data-op="back">⌫</button>
+            
+            <button class="calc-btn num" data-num="7">7</button>
+            <button class="calc-btn num" data-num="8">8</button>
+            <button class="calc-btn num" data-num="9">9</button>
+            <button class="calc-btn op" data-op="-">-</button>
+            
+            <button class="calc-btn num" data-num="4">4</button>
+            <button class="calc-btn num" data-num="5">5</button>
+            <button class="calc-btn num" data-num="6">6</button>
+            <button class="calc-btn op" data-op="+">+</button>
+            
+            <button class="calc-btn num" data-num="1">1</button>
+            <button class="calc-btn num" data-num="2">2</button>
+            <button class="calc-btn num" data-num="3">3</button>
+            <button class="calc-btn op" data-op="%">%</button>
+            
+            <button class="calc-btn num zero" data-num="0">0</button>
+            <button class="calc-btn num" data-num=".">.</button>
+            <button class="calc-btn eq" data-op="=">=</button>
+        </div>
+    </div>
+  </div>
+
+  <div id="modal-overlay" class="overlay hidden">
+      <div class="modal-card">
+          <div class="modal-header">
+              <h3 id="modal-title">Select</h3>
+              <button class="modal-close-icon" id="close-modal-btn">✕</button>
+          </div>
+          <div class="modal-body" id="modal-content">
+              </div>
+      </div>
+  </div>
+
+  <input type="hidden" id="selected-category" value="expense">
+  <input type="hidden" id="selected-subcategory" value="">
+  <input type="hidden" id="selected-date" value="">
+  <input type="hidden" id="selected-account-from" value="">
+  <input type="hidden" id="selected-account-to" value="">
+  <input type="hidden" id="note-text" value="">
 
   <script src="script.js"></script>
 </body>
