@@ -548,15 +548,27 @@ input::-webkit-inner-spin-button {
     backdrop-filter: blur(2px);
 }
 
-/* --- CALCULADORA --- */
+/* --- CALCULADORA (Estilo Análogo/Físico) --- */
+
+/* Ajuste del Overlay: Sin fondo oscuro */
+#calculator-overlay {
+    background-color: transparent !important;
+    backdrop-filter: none; 
+    align-items: flex-end;
+    pointer-events: auto; /* <--- CAMBIO: Debe ser 'auto' para detectar tu clic */
+}
+
+/* Contenedor físico de la calculadora */
 .calculator-container {
-    background-color: var(--background-cards);
+    background-color: #2b2b2b; /* Color chasis oscuro */
     width: 100%;
-    max-width: 480px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     padding: 20px;
+    padding-bottom: 30px;
     animation: slideUp 0.3s ease-out;
+    pointer-events: auto; /* Reactivar clics aquí */
+    box-shadow: 0px -5px 20px rgba(0,0,0,0.5); /* Sombra de elevación */
 }
 
 .calc-header {
@@ -564,66 +576,84 @@ input::-webkit-inner-spin-button {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    padding-inline: 8px;
+    background-color: #a7ae7c; /* Pantalla LCD fondo */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); /* Efecto hundido */
 }
 
 #calc-preview {
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'IBM Plex Sans', sans-serif; /* O una fuente monoespaciada si prefieres */
     font-size: 32px;
-    color: var(--body-white);
+    color: var(--background-dark);
     font-weight: 600;
+    text-align: right;
+    width: 100%;
 }
 
 .calc-btn-close {
-    background: none;
-    border: none;
-    color: var(--blue-enabled);
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
+    display: none; /* Ocultamos el DONE, usaremos la X del input principal para cerrar o el fondo */
 }
+/* Si quieres mantener el botón Done, borra el display:none de arriba */
 
+/* Grid: 4 columnas x 5 filas */
 .calc-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 12px;
 }
 
+/* Botones Físicos */
 .calc-btn {
-    height: 60px;
-    border-radius: 12px;
+    height: 55px;
+    border-radius: 10px; /* Rectangulares con borde suave */
     border: none;
-    font-size: 24px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     cursor: pointer;
     font-family: 'IBM Plex Sans', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.1s;
+    
+    /* Efecto 3D (Borde inferior grueso) */
+    box-shadow: 0px 4px 0px rgba(0,0,0,0.3); 
+    position: relative;
+    top: 0;
 }
 
-.calc-btn.num {
-    background-color: #333;
-    color: var(--body-white);
-}
-
-.calc-btn.op {
-    background-color: var(--blue-enabled);
-    color: white;
-}
-
-.calc-btn.eq {
-    background-color: var(--green-medium);
-    color: white;
-    grid-column: span 1; 
-}
-
-.calc-btn.zero {
-    grid-column: span 1; 
-}
-
+/* Efecto al presionar (se hunde) */
 .calc-btn:active {
-    opacity: 0.7;
+    box-shadow: 0px 0px 0px rgba(0,0,0,0.3);
+    top: 4px; /* Se mueve hacia abajo */
+}
+
+/* Colores */
+.btn-dark {
+    background-color: #949795; 
+    color: #FFF;
+}
+.btn-gray {
+    background-color: #3a4549;
+    color: #FFF;
+}
+.btn-orange {
+    background-color: #3a4549; /* Usando tu variable existente */
+    color: #FFF;
+}
+.btn-blue {
+    background-color: #3992dd; /* Usando tu variable existente */
+    color: #FFF;
+}
+.btn-red{
+    background-color: #e42727;
+    color: #FFF;
+}
+
+/* Corrección para el cero: Ahora es tamaño normal */
+.calc-btn.zero {
+    grid-column: auto; /* Resetear el span 2 anterior */
 }
 
 /* --- MODALES --- */

@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Registro de Gastos</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
 <body>
 
   <div class="container">
@@ -21,7 +21,7 @@
    <div class="amount-input">
         <div class="data-input">
             <span class="prefix-amount">$</span>
-            <input type="number" id="input" placeholder="0.00" class="[&::-webkit-inner-spin-button]:appearance-none">
+            <input type="text" inputmode="decimal" id="input" placeholder="0.00" class="[&::-webkit-inner-spin-button]:appearance-none">
         </div>
         
         <button type="button" class="clear-button" onclick="clearInput()"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-x-icon lucide-circle-x"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></button>
@@ -50,12 +50,12 @@
 
     <div class="list-of-settings">
 
-            <div class="expenses-types">
+            <div class="expenses-types hidden">
                 <span class="fixed-tab" type="button">Fixed</span>
                 <span class="flexible-tab" type="button">Flexible</span>
             </div>
 
-            <div class="transfer-types">
+            <div class="transfer-types hidden">
                 <div class="from">
                     <span class="from-name">From</span>
                     <span class="from-selection">Select Account</span>
@@ -126,15 +126,9 @@
         </button>  
     </div>
 
-
-
-  </div>
-
-
   </div>
   
-  <!-- Calculadora -->
-
+  
   <div id="calculator-overlay" class="overlay hidden">
     <div class="calculator-container">
         <div class="calc-header">
@@ -142,29 +136,30 @@
             <button id="calc-close" class="calc-btn-close">Done</button>
         </div>
         <div class="calc-grid">
-            <button class="calc-btn op" data-op="C">C</button>
-            <button class="calc-btn op" data-op="/">÷</button>
-            <button class="calc-btn op" data-op="*">×</button>
-            <button class="calc-btn op" data-op="back">⌫</button>
+            <button class="calc-btn btn-red" data-op="C">AC</button>
+            <button class="calc-btn btn-gray" data-op="del">DEL</button>
+            <button class="calc-btn btn-gray" data-op="%">%</button>
+            <button class="calc-btn btn-orange" data-op="/">÷</button>
             
-            <button class="calc-btn num" data-num="7">7</button>
-            <button class="calc-btn num" data-num="8">8</button>
-            <button class="calc-btn num" data-num="9">9</button>
-            <button class="calc-btn op" data-op="-">-</button>
+            <button class="calc-btn btn-dark" data-num="7">7</button>
+            <button class="calc-btn btn-dark" data-num="8">8</button>
+            <button class="calc-btn btn-dark" data-num="9">9</button>
+            <button class="calc-btn btn-orange" data-op="*">×</button>
             
-            <button class="calc-btn num" data-num="4">4</button>
-            <button class="calc-btn num" data-num="5">5</button>
-            <button class="calc-btn num" data-num="6">6</button>
-            <button class="calc-btn op" data-op="+">+</button>
+            <button class="calc-btn btn-dark" data-num="4">4</button>
+            <button class="calc-btn btn-dark" data-num="5">5</button>
+            <button class="calc-btn btn-dark" data-num="6">6</button>
+            <button class="calc-btn btn-orange" data-op="-">-</button>
             
-            <button class="calc-btn num" data-num="1">1</button>
-            <button class="calc-btn num" data-num="2">2</button>
-            <button class="calc-btn num" data-num="3">3</button>
-            <button class="calc-btn op" data-op="%">%</button>
+            <button class="calc-btn btn-dark" data-num="1">1</button>
+            <button class="calc-btn btn-dark" data-num="2">2</button>
+            <button class="calc-btn btn-dark" data-num="3">3</button>
+            <button class="calc-btn btn-orange" data-op="+">+</button>
             
-            <button class="calc-btn num zero" data-num="0">0</button>
-            <button class="calc-btn num" data-num=".">.</button>
-            <button class="calc-btn eq" data-op="=">=</button>
+            <button class="calc-btn btn-gray" data-op="neg">+/-</button>
+            <button class="calc-btn btn-dark zero" data-num="0">0</button>
+            <button class="calc-btn btn-dark" data-num=".">.</button>
+            <button class="calc-btn btn-blue" data-op="=">=</button>
         </div>
     </div>
   </div>
@@ -180,7 +175,7 @@
       </div>
   </div>
 
-  <input type="hidden" id="selected-category" value="expense">
+  <input type="hidden" id="selected-category" value="">
   <input type="hidden" id="selected-subcategory" value="">
   <input type="hidden" id="selected-date" value="">
   <input type="hidden" id="selected-account-from" value="">
