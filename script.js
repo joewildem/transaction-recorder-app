@@ -217,49 +217,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // ==========================================
+   // ==========================================
     // 3. LÓGICA DE SELECCIÓN DE CATEGORÍAS
     // ==========================================
 
     const chips = document.querySelectorAll('.chip');
     const expensesTypesDiv = document.querySelector('.expenses-types');
     const transferTypesDiv = document.querySelector('.transfer-types');
-    const hiddenCategory = document.getElementById('selected-category'); // Input oculto
+    const hiddenCategory = document.getElementById('selected-category');
+
+    // Referencias a las cards de abajo (settings)
+    // [0]: Sub Category, [1]: Date, [2]: Account, [3]: Note
+    const settingsCards = document.querySelectorAll('.selection-card');
+    const cardSubCategory = settingsCards[0];
+    const cardAccount = settingsCards[2];
 
     chips.forEach(chip => {
         chip.addEventListener('click', () => {
             // A. LIMPIEZA VISUAL
-            // Primero quitamos la clase 'active-chip' de TODOS los chips para "apagarlos"
             chips.forEach(c => c.classList.remove('active-chip'));
-            
-            // B. ACTIVAR EL SELECCIONADO
-            // Agregamos la clase solo al que recibio el clic
             chip.classList.add('active-chip');
             
-            // C. OBTENER EL VALOR DE LA CATEGORÍA
-            // Si tiene data-value (ej: investment) úsalo, si no, usa el texto (Expense)
-            const category = (chip.dataset.value || chip.innerText).toLowerCase();
-            hiddenCategory.value = category; // Lo guardamos en el input oculto para usarlo luego
+            // AGREGA ESTA LÍNEA AQUÍ:
+            resetSubCategorySelection(); // <--- Limpia la subcategoría al cambiar de chip principal
 
-            // D. RESET DE PANELES (Estado Base)
-            // Por seguridad, ocultamos AMBOS paneles primero. 
-            // Así evitamos que se queden encimados o visibles por error.
+            // B. OBTENER VALOR
+            const category = (chip.dataset.value || chip.innerText).toLowerCase();
+            hiddenCategory.value = category;
+
+            // C. RESET GENERAL (Estado Base: Todo visible y secciones ocultas)
             expensesTypesDiv.classList.add('hidden');
             transferTypesDiv.classList.add('hidden');
-
-            // E. REGLA: EXPENSE
-            if (category === 'expense') {
-                // Si seleccionaste Expense, quitamos el 'hidden' de los tipos de gasto
-                expensesTypesDiv.classList.remove('hidden');
-            }
             
-            // Aquí abajo agregaremos las reglas para Transfer e Income en el siguiente paso...
+            // Importante: Volvemos a mostrar las cards por si venimos de 'transfer'
+            cardSubCategory.classList.remove('hidden');
+            cardAccount.classList.remove('hidden');
+
+            // D. REGLAS POR CATEGORÍA
             if (category === 'expense') {
                 expensesTypesDiv.classList.remove('hidden');
             } 
-            // AGREGA ESTO:
             else if (category === 'transfer') {
                 transferTypesDiv.classList.remove('hidden');
+                // Transfer: Ocultamos Sub Categoría y Cuenta
+                cardSubCategory.classList.add('hidden');
+                cardAccount.classList.add('hidden');
+            }
+            // NUEVA REGLA: INVESTMENT
+            else if (category === 'investment') {
+                // Investment: Ocultamos Sub Categoría
+                cardSubCategory.classList.add('hidden');
             }
         });
     });
@@ -273,20 +280,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // A. Clic en FIXED
     fixedTab.addEventListener('click', () => {
-        // 1. Activar Fixed (ponerle su color rojo)
         fixedTab.classList.add('active-tab-fixed');
-        
-        // 2. Desactivar Flexible (quitarle su color amarillo por si lo tenía)
         flexibleTab.classList.remove('active-tab-flexible');
+        
+        // AGREGA ESTA LÍNEA:
+        resetSubCategorySelection(); // <--- Limpia al cambiar de tab
     });
 
     // B. Clic en FLEXIBLE
     flexibleTab.addEventListener('click', () => {
-        // 1. Activar Flexible (ponerle su color amarillo)
         flexibleTab.classList.add('active-tab-flexible');
-        
-        // 2. Desactivar Fixed (quitarle su color rojo por si lo tenía)
         fixedTab.classList.remove('active-tab-fixed');
+        
+        // AGREGA ESTA LÍNEA:
+        resetSubCategorySelection(); // <--- Limpia al cambiar de tab
     });
 
     // ==========================================
@@ -400,4 +407,111 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+
+    // ==========================================
+    // 7. LÓGICA DE SUB CATEGORÍAS (Dinámica)
+    // ==========================================
+
+    const subCategoryText = cardSubCategory.querySelector('.selection-name');
+    const subCategoryInputHidden = document.getElementById('selected-subcategory');
+
+    // --- NUEVA FUNCIÓN: RESETEAR SELECCIÓN ---
+    function resetSubCategorySelection() {
+        subCategoryText.innerText = "Select"; // Volver al texto por defecto
+        subCategoryText.style.color = "var(--system-1)"; // Volver al color gris
+        subCategoryInputHidden.value = ""; // Borrar el dato guardado
+    }
+
+    // A. BASE DE DATOS DE SUBCATEGORÍAS
+    const subCategoriesData = {
+        fixed: ["House Rent", "Electricity Bill", "Internet", "Phone credit", "Food", "Pantry", "Home", "Transport", "Health"],
+        flexible: ["Subscriptions", "Clothes", "Swimming", "Gifts", "Jana", "Learning", "Entertainment", "Misc", "Travel", "Gym"],
+        income: ["Salary", "Extra", "Investments & Savings", "Previous balance"],
+        savings: ["Emergency Fund", "Auto", "Trips", "Guitar", "Jana", "Misc"],
+        loans: ["HSBC 2Now", "Joy Banamex", "Nubank", "Liverpool", "Mercado Crédito", "BBVA Azul"]
+    };
+
+    // B. EVENTO CLICK EN LA CARD
+    cardSubCategory.addEventListener('click', () => {
+        // 1. Averiguar en qué estado estamos
+        const currentCategory = hiddenCategory.value; // expense, income, savings...
+        let listToShow = [];
+
+        // 2. Selección de lista según lógica de negocio
+        if (currentCategory === 'expense') {
+            // Si es gasto, preguntamos: ¿Está activo Fixed o Flexible?
+            if (fixedTab.classList.contains('active-tab-fixed')) {
+                listToShow = subCategoriesData.fixed;
+            } else {
+                listToShow = subCategoriesData.flexible;
+            }
+        } 
+        else if (currentCategory === 'income') {
+            listToShow = subCategoriesData.income;
+        }
+        else if (currentCategory === 'savings') {
+            listToShow = subCategoriesData.savings;
+        }
+        else if (currentCategory === 'loans') {
+            listToShow = subCategoriesData.loans;
+        }
+
+        // 3. Abrir el Modal
+        // Usamos nuestra función maestra. Pasamos [] como segundo array porque aquí no hay "secundarios"
+        openModal("Select Category", listToShow, [], (selectedValue) => {
+            // Actualizar UI y Guardar
+            subCategoryText.innerText = selectedValue;
+            subCategoryText.style.color = "var(--body-white)";
+            subCategoryInputHidden.value = selectedValue;
+        });
+    });
+
+    // ==========================================
+    // 8. LÓGICA DE FECHA (Date Picker Nativo)
+    // ==========================================
+
+    const dateCard = settingsCards[1]; // La card en posición 1 es la de Fecha
+    const dateText = dateCard.querySelector('.selection-name');
+
+    // 1. Crear un input de fecha invisible dinámicamente
+    const dateInput = document.createElement('input');
+    dateInput.type = 'date';
+    dateInput.style.opacity = '0';      // Invisible
+    dateInput.style.position = 'absolute'; // Fuera del flujo
+    dateInput.style.pointerEvents = 'none'; // Que no estorbe clicks
+    dateInput.style.bottom = '0';
+    document.body.appendChild(dateInput); // Lo agregamos al cuerpo del documento
+
+    // 2. Función para formatear fecha (ej: "03 Feb 2026")
+    function formatDate(dateString) {
+        // Truco: Agregamos 'T00:00' para evitar problemas de zona horaria
+        const date = new Date(dateString + 'T00:00:00'); 
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        return date.toLocaleDateString('en-GB', options);
+    }
+
+    // 3. Establecer FECHA DE HOY por defecto al iniciar
+    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    dateInput.value = today;
+    dateText.innerText = formatDate(today);
+    dateText.style.color = "var(--body-white)"; // Ya se ve activa
+
+    // 4. Clic en la Card -> Abre el calendario nativo
+    dateCard.addEventListener('click', () => {
+        // showPicker() es la forma moderna de abrir el calendario nativo en JS
+        if ('showPicker' in HTMLInputElement.prototype) {
+            dateInput.showPicker();
+        } else {
+            dateInput.click(); // Fallback para navegadores viejos
+        }
+    });
+
+    // 5. Cuando el usuario elige una fecha
+    dateInput.addEventListener('change', () => {
+        if (dateInput.value) {
+            dateText.innerText = formatDate(dateInput.value);
+            // Aquí ya tienes el valor en 'dateInput.value' para guardarlo en BD luego
+        }
+    });
+    
 });

@@ -720,7 +720,6 @@ input::-webkit-inner-spin-button {
     justify-content: space-between; /* Texto a la izq, check a la der (si lo hubiera) */
     padding: 16px;
     color: var(--body-white);
-    border-bottom: 1px solid #333;
     cursor: pointer;
     font-family: 'IBM Plex Sans', sans-serif;
     font-size: 16px;
