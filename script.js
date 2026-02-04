@@ -466,36 +466,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // ==========================================
-    // 8. LÓGICA DE FECHA (Nativo y Posicionado)
+   // ==========================================
+    // 8. LÓGICA DE FECHA (Técnica Overlay Invisible)
     // ==========================================
 
     const dateCard = settingsCards[1];
     const dateText = dateCard.querySelector('.selection-name');
 
-    // 1. Asegurar que la tarjeta tenga posición relativa para contener el input
-    dateCard.style.position = 'relative';
+    // 1. Preparamos la tarjeta contenedora
+    dateCard.style.position = 'relative'; // Necesario para que el hijo absoluto se pegue aquí
 
-    // 2. Crear input dentro de la tarjeta
+    // 2. Creamos el input y lo ponemos ENCIMA de todo (Overlay)
     const dateInput = document.createElement('input');
     dateInput.type = 'date';
     
-    // Estilos para que esté "ahí" pero invisible, justo en el centro de la card
-    // Esto obliga al calendario a aparecer anclado a la tarjeta
     Object.assign(dateInput.style, {
         position: 'absolute',
         left: '0',
         top: '0',
-        width: '100%',
-        height: '100%',
-        opacity: '0',
-        zIndex: '-1', // Detrás del texto para no bloquear clicks, usaremos JS para abrirlo
-        border: 'none'
+        width: '100%',     // Cubre todo el ancho
+        height: '100%',    // Cubre todo el alto
+        opacity: '0',      // Totalmente transparente (invisible)
+        zIndex: '10',      // ENCIMA del texto (clave para que funcione en móvil)
+        border: 'none',
+        cursor: 'pointer',  // Para que en web salga la manita
+        display: 'block'    // Asegura que ocupe espacio
     });
 
-    dateCard.appendChild(dateInput); // <--- CAMBIO CLAVE: Lo metemos EN la card
+    dateCard.appendChild(dateInput); 
 
-    // 3. Formateador
+    // 3. Formateador de fecha
     function formatDate(dateString) {
         if (!dateString) return "Select Date";
         const date = new Date(dateString + 'T00:00:00');
@@ -503,30 +503,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return date.toLocaleDateString('en-GB', options);
     }
 
-    // 4. Establecer FECHA DE HOY
+    // 4. Inicializar con fecha de HOY
     const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     dateText.innerText = formatDate(today);
     dateText.style.color = "var(--body-white)";
 
-    // 5. Clic en la Card
-    dateCard.addEventListener('click', () => {
-        // Al estar el input DENTRO de la card, el picker saldrá pegado a ella
-        if ('showPicker' in HTMLInputElement.prototype) {
-            dateInput.showPicker();
-        } else {
-            // Fallback: Simulamos clic directo si el navegador es viejo
-            dateInput.style.zIndex = '10'; // Lo traemos al frente un milisegundo
-            dateInput.click();
-            dateInput.style.zIndex = '-1';
-        }
-    });
-
-    // 6. Cambio de fecha
+    // 5. Escuchar cambios
+    // NOTA: Ya no necesitamos un evento 'click' en la card para abrir el picker,
+    // porque al estar el input ENCIMA, el usuario lo clica directamente.
     dateInput.addEventListener('change', () => {
         if (dateInput.value) {
             dateText.innerText = formatDate(dateInput.value);
         }
+    });
+    
+    // Fix extra para que en iOS se sienta instantáneo
+    dateInput.addEventListener('click', (e) => {
+        // Esto asegura que el evento se propague correctamente
+        e.stopPropagation(); 
     });
     
 });
