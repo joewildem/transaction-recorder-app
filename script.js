@@ -467,50 +467,65 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // 8. LÓGICA DE FECHA (Date Picker Nativo)
+    // 8. LÓGICA DE FECHA (Nativo y Posicionado)
     // ==========================================
 
-    const dateCard = settingsCards[1]; // La card en posición 1 es la de Fecha
+    const dateCard = settingsCards[1];
     const dateText = dateCard.querySelector('.selection-name');
 
-    // 1. Crear un input de fecha invisible dinámicamente
+    // 1. Asegurar que la tarjeta tenga posición relativa para contener el input
+    dateCard.style.position = 'relative';
+
+    // 2. Crear input dentro de la tarjeta
     const dateInput = document.createElement('input');
     dateInput.type = 'date';
-    dateInput.style.opacity = '0';      // Invisible
-    dateInput.style.position = 'absolute'; // Fuera del flujo
-    dateInput.style.pointerEvents = 'none'; // Que no estorbe clicks
-    dateInput.style.bottom = '0';
-    document.body.appendChild(dateInput); // Lo agregamos al cuerpo del documento
+    
+    // Estilos para que esté "ahí" pero invisible, justo en el centro de la card
+    // Esto obliga al calendario a aparecer anclado a la tarjeta
+    Object.assign(dateInput.style, {
+        position: 'absolute',
+        left: '0',
+        top: '0',
+        width: '100%',
+        height: '100%',
+        opacity: '0',
+        zIndex: '-1', // Detrás del texto para no bloquear clicks, usaremos JS para abrirlo
+        border: 'none'
+    });
 
-    // 2. Función para formatear fecha (ej: "03 Feb 2026")
+    dateCard.appendChild(dateInput); // <--- CAMBIO CLAVE: Lo metemos EN la card
+
+    // 3. Formateador
     function formatDate(dateString) {
-        // Truco: Agregamos 'T00:00' para evitar problemas de zona horaria
-        const date = new Date(dateString + 'T00:00:00'); 
+        if (!dateString) return "Select Date";
+        const date = new Date(dateString + 'T00:00:00');
         const options = { day: 'numeric', month: 'short', year: 'numeric' };
         return date.toLocaleDateString('en-GB', options);
     }
 
-    // 3. Establecer FECHA DE HOY por defecto al iniciar
-    const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    // 4. Establecer FECHA DE HOY
+    const today = new Date().toISOString().split('T')[0];
     dateInput.value = today;
     dateText.innerText = formatDate(today);
-    dateText.style.color = "var(--body-white)"; // Ya se ve activa
+    dateText.style.color = "var(--body-white)";
 
-    // 4. Clic en la Card -> Abre el calendario nativo
+    // 5. Clic en la Card
     dateCard.addEventListener('click', () => {
-        // showPicker() es la forma moderna de abrir el calendario nativo en JS
+        // Al estar el input DENTRO de la card, el picker saldrá pegado a ella
         if ('showPicker' in HTMLInputElement.prototype) {
             dateInput.showPicker();
         } else {
-            dateInput.click(); // Fallback para navegadores viejos
+            // Fallback: Simulamos clic directo si el navegador es viejo
+            dateInput.style.zIndex = '10'; // Lo traemos al frente un milisegundo
+            dateInput.click();
+            dateInput.style.zIndex = '-1';
         }
     });
 
-    // 5. Cuando el usuario elige una fecha
+    // 6. Cambio de fecha
     dateInput.addEventListener('change', () => {
         if (dateInput.value) {
             dateText.innerText = formatDate(dateInput.value);
-            // Aquí ya tienes el valor en 'dateInput.value' para guardarlo en BD luego
         }
     });
     
