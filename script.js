@@ -617,4 +617,105 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // ==========================================
+    // 10. ENVÍO DE DATOS A MAKE (Google Sheets)
+    // ==========================================
+
+    const submitBtn = document.querySelector('.primary-button');
+    const submitBtnLabel = submitBtn.querySelector('.button-label');
+    
+    // ⬇️ PEGA AQUÍ TU URL DE MAKE CUANDO LA TENGAS ⬇️
+    const MAKE_WEBHOOK_URL = "https://hook.us2.make.com/kq3krc4l48olf1r6inukejaaywnsc81e"; 
+
+    submitBtn.addEventListener('click', () => {
+        // 1. VALIDACIÓN BÁSICA
+        const amount = inputAmount.value;
+        const category = hiddenCategory.value;
+        
+        if (!amount || amount === "0" || amount === "0.00") {
+            alert("Please enter an amount");
+            return;
+        }
+        if (!category) {
+            alert("Please select a category");
+            return;
+        }
+
+        // 2. PREPARAR DATOS (Detectar Fixed vs Flexible)
+        let expenseType = "";
+        if (category === 'expense') {
+            // Verificamos cuál pestaña tiene la clase activa
+            if (fixedTab.classList.contains('active-tab-fixed')) {
+                expenseType = "Fixed";
+            } else {
+                expenseType = "Flexible";
+            }
+        }
+
+        // Limpieza de datos
+        const cleanAmount = parseFloat(amount.replace(/,/g, ''));
+
+        // EL PAQUETE JSON FINAL
+        const dataToSend = {
+            date: dateInput.value,           // "2026-02-04"
+            amount: cleanAmount,             // 120.50 (Número)
+            category: category,              // "expense", "income", "transfer"
+            expense_type: expenseType,       // "Fixed", "Flexible" o vacío ""
+            subcategory: subCategoryInputHidden.value || "", // "Rent", "Salary"
+            note: document.getElementById('note-text').value || "",
+            
+            // Cuentas: Si es Transfer mandamos Origen/Destino, si no, la cuenta general
+            account_from: category === 'transfer' ? fromInputHidden.value : document.getElementById('selected-account').value,
+            account_to: category === 'transfer' ? toInputHidden.value : ""
+        };
+
+        // 3. UI FEEDBACK (Cambiamos el botón)
+        const originalText = submitBtnLabel.innerText;
+        submitBtnLabel.innerText = "Saving...";
+        submitBtn.classList.add('card-disabled'); 
+
+        // 4. ENVIAR A MAKE
+        fetch(MAKE_WEBHOOK_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (response.ok) {
+                // ÉXITO
+                submitBtnLabel.innerText = "Saved!";
+                setTimeout(() => {
+                    resetForm(); 
+                    submitBtnLabel.innerText = originalText;
+                    submitBtn.classList.remove('card-disabled');
+                }, 1500);
+            } else {
+                throw new Error("Error en Make");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            submitBtnLabel.innerText = "Error";
+            alert("Error al guardar. Verifica tu conexión.");
+            submitBtn.classList.remove('card-disabled');
+            submitBtnLabel.innerText = originalText;
+        });
+    });
+
+    // Función para limpiar tras guardar
+    function resetForm() {
+        window.clearInput(); // Limpia monto
+        document.getElementById('note-text').value = ""; // Limpia nota oculta
+        
+        // Reset UI de Nota
+        const noteText = cardNote.querySelector('.selection-name');
+        noteText.innerText = "Select";
+        noteText.style.color = "var(--system-1)";
+        
+        // (Opcional) Si quieres resetear también la categoría, descomenta esto:
+        // expensesTypesDiv.classList.add('hidden');
+        // cardSubCategory.classList.add('card-disabled');
+        // ...etc
+    }
+
 });
