@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const cardAccount     = settingsCards[2]; 
     const cardNote        = settingsCards[3];
 
+    // --- ESTADO INICIAL: BLOQUEADO ---
+    // La tarjeta nace deshabilitada hasta que el usuario elija algo
+    cardSubCategory.classList.add('card-disabled');
+
     // Componentes del Modal
     const modalOverlay = document.getElementById('modal-overlay');
     const innerModalCard = document.querySelector('.modal-card'); // La tarjeta blanca
@@ -41,12 +45,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     const inputAmount = document.getElementById('input');
+    
+    // Elementos de la Calculadora
     const calcOverlay = document.getElementById('calculator-overlay');
     const calcPreview = document.getElementById('calc-preview');
     const calcButtons = document.querySelectorAll('.calc-btn');
+    
+    // NUEVO: Referencia al botón de calculadora en el header
+    const calcIcon = document.querySelector('.header-icon'); 
+
+    // Variable interna para guardar la operación "pura"
     let currentCalcString = "0"; 
 
-    // --- A. FORMATO (Miles) ---
+    // --- A. FUNCIONES DE FORMATO ---
     function formatNumber(numStr) {
         if (!numStr) return "";
         const parts = numStr.split('.');
@@ -66,26 +77,41 @@ document.addEventListener('DOMContentLoaded', () => {
         calcPreview.innerText = formatExpression(currentCalcString);
     }
 
-    // --- B. EVENTOS INPUT ---
+    // --- B. EVENTOS INPUT (Teclado Nativo) ---
+    
+    // Escuchar lo que escribe el usuario para formatearlo y actualizar la variable
     inputAmount.addEventListener('input', (e) => {
-        const cursorPosition = inputAmount.selectionStart;
+        // 1. Limpieza y validación básica
         let rawValue = inputAmount.value.replace(/,/g, '');
         if (isNaN(rawValue) && rawValue !== ".") rawValue = "";
+        
+        // 2. Formatear visualmente (poner comas)
         inputAmount.value = formatNumber(rawValue);
+        
+        // 3. IMPORTANTE: Sincronizar con la variable de la calculadora
+        // Así, si luego abres la calculadora, ya tiene lo que escribiste a mano.
         currentCalcString = rawValue || "0";
     });
 
-    inputAmount.addEventListener('click', (e) => {
-        if (window.innerWidth <= 480) {
-            e.preventDefault();
+    // --- C. ABRIR CALCULADORA (Solo con el Icono) ---
+    
+    if (calcIcon) {
+        calcIcon.addEventListener('click', () => {
+            // 1. Ocultar teclado nativo (quita el foco del input)
             inputAmount.blur();
-            currentCalcString = inputAmount.value.replace(/,/g, '') || "0";
+            
+            // 2. Preparar datos
+            // Nos aseguramos que la calculadora inicie con lo que haya en el input
+            let val = inputAmount.value.replace(/,/g, '') || "0";
+            currentCalcString = val;
             updateCalcDisplay();
+            
+            // 3. Mostrar Overlay
             calcOverlay.classList.remove('hidden');
-        }
-    });
+        });
+    }
 
-    // --- C. LÓGICA CALCULADORA ---
+    // --- D. LÓGICA DE BOTONES DE CALCULADORA (Igual que antes) ---
     calcButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const num = btn.dataset.num;
@@ -112,14 +138,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } 
                 else if (op === '=') {
                     try {
+                        // Lógica de porcentaje y evaluación
                         let expression = currentCalcString.replace(/(\d+(?:\.\d+)?)([\+\-])(\d+(?:\.\d+)?)%/g, (match, num1, operator, num2) => {
                             const val1 = parseFloat(num1);
                             const val2 = parseFloat(num2);
-                            const percentVal = (val1 * val2) / 100;
-                            return `${val1}${operator}${percentVal}`;
+                            return `${val1}${operator}${(val1 * val2) / 100}`;
                         });
                         expression = expression.replace(/%/g, '/100');
+                        
                         let result = eval(expression).toString();
+                        
+                        // Redondeo a 2 decimales si es necesario
                         if (result.includes('.')) {
                              result = parseFloat(result).toFixed(2);
                              if (result.endsWith('.00')) result = result.slice(0, -3);
@@ -128,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         inputAmount.value = formatNumber(currentCalcString);
                     } catch { currentCalcString = "Error"; }
                 } 
-                else { // Operadores
+                else { // Operadores +, -, *, /
                     const lastChar = currentCalcString.slice(-1);
                     if ("+-*/%".includes(lastChar)) {
                         currentCalcString = currentCalcString.slice(0, -1) + op;
@@ -141,12 +170,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Light Dismiss Calculadora
+    // Cerrar calculadora al tocar fuera
     calcOverlay.addEventListener('click', (e) => {
         if (e.target === calcOverlay) {
              calcOverlay.classList.add('hidden');
              inputAmount.value = formatNumber(currentCalcString);
         }
+    });
+
+    // Botón Done interno de la calculadora
+    document.getElementById('calc-close').addEventListener('click', () => {
+         calcOverlay.classList.add('hidden');
+         inputAmount.value = formatNumber(currentCalcString);
     });
 
     window.clearInput = function() {
@@ -193,23 +228,33 @@ document.addEventListener('DOMContentLoaded', () => {
             chips.forEach(c => c.classList.remove('active-chip'));
             chip.classList.add('active-chip');
             
-            resetSubCategorySelection(); // Limpia subcategoría
+            resetSubCategorySelection(); 
 
             const category = (chip.dataset.value || chip.innerText).toLowerCase();
             hiddenCategory.value = category;
 
-            // Reset Paneles
+            // Reset Paneles y Cards
             expensesTypesDiv.classList.add('hidden');
             transferTypesDiv.classList.add('hidden');
-            
-            // Reset Cards (Mostrar todas por defecto)
             cardSubCategory.classList.remove('hidden');
             cardAccount.classList.remove('hidden');
-
-            // Reglas
+            
+            // --- LÓGICA DE BLOQUEO DE SUBCATEGORÍA ---
             if (category === 'expense') {
                 expensesTypesDiv.classList.remove('hidden');
+                
+                // EN EXPENSE: Bloqueamos la tarjeta.
+                // El usuario DEBE hacer clic en "Fixed" o "Flexible" para desbloquearla.
+                cardSubCategory.classList.add('card-disabled'); 
+                
+                // Opcional: Quitamos la selección visual de los botones Fixed/Flex para reiniciar
+                fixedTab.classList.remove('active-tab-fixed');
+                flexibleTab.classList.remove('active-tab-flexible');
             } 
+            else if (category === 'income' || category === 'savings' || category === 'loans') {
+                // EN ESTOS: Desbloqueamos inmediatamente
+                cardSubCategory.classList.remove('card-disabled');
+            }
             else if (category === 'transfer') {
                 transferTypesDiv.classList.remove('hidden');
                 cardSubCategory.classList.add('hidden');
@@ -228,16 +273,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const fixedTab = document.querySelector('.fixed-tab');
     const flexibleTab = document.querySelector('.flexible-tab');
 
+    // A. Clic en FIXED
     fixedTab.addEventListener('click', () => {
         fixedTab.classList.add('active-tab-fixed');
         flexibleTab.classList.remove('active-tab-flexible');
+        
         resetSubCategorySelection(); 
+        
+        // ¡DESBLOQUEAR! Ahora sí sabemos que quiere gastos fijos
+        cardSubCategory.classList.remove('card-disabled');
     });
 
+    // B. Clic en FLEXIBLE
     flexibleTab.addEventListener('click', () => {
         flexibleTab.classList.add('active-tab-flexible');
         fixedTab.classList.remove('active-tab-fixed');
+        
         resetSubCategorySelection();
+        
+        // ¡DESBLOQUEAR! Ahora sí sabemos que quiere gastos flexibles
+        cardSubCategory.classList.remove('card-disabled');
     });
 
     // ==========================================
@@ -311,12 +366,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // 6. DATOS Y CONEXIÓN (TRANSFER)
+    // 6. DATOS Y CONEXIÓN DE CUENTAS (Transfer + General)
     // ==========================================
 
     const primaryAccounts = ["Cash", "HSBC 2Now", "MiCuenta Banamex", "Joy Banamex"];
     const secondaryAccounts = ["TDC", "Nu Crédito", "Nu Debito", "Azul BBVA", "Libretón BBVA", "Liverpool"];
 
+    // A. LÓGICA PARA TRANSFERENCIAS (From / To)
     fromBtn.addEventListener('click', () => {
         openModal("From account", primaryAccounts, secondaryAccounts, (selectedValue) => {
             fromSelectionText.innerText = selectedValue;
@@ -330,6 +386,27 @@ document.addEventListener('DOMContentLoaded', () => {
             toSelectionText.innerText = selectedValue;
             toSelectionText.style.color = "var(--body-white)";
             toInputHidden.value = selectedValue;
+        });
+    });
+
+    // B. LÓGICA PARA CUENTA GENERAL (Expense / Income)
+    // Usamos 'cardAccount' que ya definimos en el Bloque Maestro
+    
+    // 1. Referencias locales
+    const accountText = cardAccount.querySelector('.selection-name');
+    const accountInputHidden = document.getElementById('selected-account');
+
+    // 2. Evento Click
+    cardAccount.addEventListener('click', () => {
+        openModal("Select Account", primaryAccounts, secondaryAccounts, (selectedValue) => {
+            // Actualizar UI
+            accountText.innerText = selectedValue;
+            accountText.style.color = "var(--body-white)";
+            
+            // Guardar datos (si agregaste el input al HTML)
+            if (accountInputHidden) {
+                accountInputHidden.value = selectedValue;
+            }
         });
     });
 
@@ -477,4 +554,67 @@ document.addEventListener('DOMContentLoaded', () => {
         dateInput.blur(); 
     });
     
+    // ==========================================
+    // 9. LÓGICA DE NOTA (Input de Texto)
+    // ==========================================
+
+    const noteText = cardNote.querySelector('.selection-name');
+    const noteInputHidden = document.getElementById('note-text');
+
+    cardNote.addEventListener('click', () => {
+        // 1. Configurar Título y Limpiar
+        modalTitle.innerText = "Note";
+        modalContent.innerHTML = ''; 
+
+        // 2. Crear Contenedor del Formulario
+        const container = document.createElement('div');
+        container.className = 'modal-note-container';
+
+        // 3. Crear Input de Texto
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'modal-note-input';
+        input.placeholder = "Transaction details"; // Texto fantasma
+        input.value = noteInputHidden.value;       // Cargar nota previa si existe
+        
+        // Auto-focus: Para que el teclado salga rápido en móviles
+        setTimeout(() => input.focus(), 100); 
+
+        // 4. Crear Botón "Add note"
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'modal-note-btn';
+        saveBtn.innerText = "Add note";
+
+        // 5. Lógica de Guardado
+        saveBtn.addEventListener('click', () => {
+            const val = input.value.trim();
+            
+            // A. Guardar en input oculto
+            noteInputHidden.value = val;
+            
+            // B. Actualizar la Tarjeta UI
+            if (val.length > 0) {
+                // Si el texto es muy largo, mostramos "Texto..." para que quepa
+                noteText.innerText = val.length > 15 ? val.substring(0, 15) + "..." : val;
+                noteText.style.color = "var(--body-white)";
+            } else {
+                // Si lo dejó vacío
+                noteText.innerText = "Select";
+                noteText.style.color = "var(--system-1)";
+            }
+
+            // C. Cerrar Modal
+            modalOverlay.classList.add('hidden');
+        });
+
+        // 6. Armar todo y mostrar
+        container.appendChild(input);
+        container.appendChild(saveBtn);
+        modalContent.appendChild(container);
+
+        modalOverlay.classList.remove('hidden');
+        innerModalCard.classList.remove('hidden'); // Aseguramos que se vea la tarjeta blanca
+    });
+
+
 });

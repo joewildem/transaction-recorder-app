@@ -206,10 +206,13 @@ input::-webkit-inner-spin-button {
     border-radius: 50px;
 }
 
-.chip:hover{
-    background: var(--background-card-active);
-    transition: 0.2s ease-in-out;
-    cursor: pointer;
+/* Solo aplicar Hover en escritorio */
+@media (min-width: 481px) {
+    .chip:hover {
+        background-color: var(--background-card-active);
+        border-color: #555;
+        cursor: pointer;
+    }
 }
 
 .chip:active{
@@ -375,10 +378,11 @@ input::-webkit-inner-spin-button {
   margin-bottom: 8px;
 }
 
-.selection-card:hover{
-    background: var(--background-card-active);
-    transition: 0.2s ease-in-out;
-    cursor: pointer;
+@media (min-width: 481px) {
+    .selection-card:not(.card-disabled):hover {
+        background-color: var(--background-card-active);
+        cursor: pointer;
+    }
 }
 
 .selection-card:active{
@@ -445,21 +449,23 @@ input::-webkit-inner-spin-button {
     justify-content: center;
     align-items: center;
     border: none;
-    gap: 8px;
-    height: 56px;
+    padding-bottom: 4px;
+    height: 48px;
     width: 100%;
 }
 
-.primary-button:hover{
-    background: var(--blue-hover);
-    cursor: pointer;
-    transition: 0.4s ease-in-out;
+@media (min-width: 481px) {
+    .primary-button:hover {
+        background-color: var(--blue-hover); /* Un poco más oscuro que el blanco */
+        cursor: pointer;
+        transition: 0.4s ease-in-out;
+    }
 }
 
 .button-label{
     color: var(--body-white);
     font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     display: flex;
     justify-content: center;
@@ -501,7 +507,7 @@ input::-webkit-inner-spin-button {
   }
 
   .primary-button {
-    height: 56px;
+    height: 48px;
   }
 }
 
@@ -520,7 +526,8 @@ input::-webkit-inner-spin-button {
   }
 
   .primary-button {
-    height: 60px;
+    height: 48px;
+    margin-top: 16px;
   }
 }
 
@@ -644,15 +651,15 @@ input::-webkit-inner-spin-button {
 
 /* Colores */
 .btn-dark {
-    background-color: #949795; 
+    background-color: #525c67; 
     color: #FFF;
 }
 .btn-gray {
-    background-color: #3a4549;
+    background-color: #232728;
     color: #FFF;
 }
 .btn-orange {
-    background-color: #3a4549; /* Usando tu variable existente */
+    background-color: #232728; /* Usando tu variable existente */
     color: #FFF;
 }
 .btn-blue {
@@ -728,8 +735,10 @@ input::-webkit-inner-spin-button {
     transition: background-color 0.2s;
 }
 
-.modal-list-item:hover {
-    background-color: var(--background-card-active);
+@media (min-width: 481px) {
+    .modal-list-item:hover {
+        background-color: var(--background-card-active);
+    }
 }
 
 .modal-list-item:last-child {
@@ -847,5 +856,70 @@ input::-webkit-inner-spin-button {
         /* SEGURIDAD: Si la lista es gigante, que no pase del 85% de la pantalla */
         max-height: 85vh; 
         overflow-y: auto; /* Scroll solo si excede el 85% de la pantalla total */
+    }
+}
+
+/* --- ESTILOS PARA EL MODAL DE NOTA --- */
+.modal-note-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espacio entre input y botón */
+    padding: 16px 0;
+}
+
+.modal-note-input {
+    width: auto;
+    background-color: var(--background-main); /* Fondo oscuro pero diferenciado */
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--body-white);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.modal-note-input:focus {
+    border-color: #ADBCF2;
+    
+}
+
+.modal-note-btn {
+    width: 100%;
+    background-color: var(--background-cards);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.modal-note-btn:active {
+    background-color: var(--blue-pressed);
+}
+
+/* --- ESTADO DESHABILITADO (Bloqueo de UI) --- */
+.card-disabled {
+    opacity: 0.4;              /* Se ve desvanecido */
+    pointer-events: none;      /* No recibe clics */
+    filter: grayscale(100%);   /* (Opcional) Lo pone en blanco y negro */
+    cursor: not-allowed;
+}
+
+/* --- VISIBILIDAD DE LA CALCULADORA --- */
+
+/* 1. Por defecto (Móvil): El icono es visible */
+.header-icon {
+    display: flex; /* O block, según tu alineación */
+    cursor: pointer;
+}
+
+/* 2. En Escritorio (Web > 480px): Lo ocultamos */
+@media (min-width: 481px) {
+    .header-icon {
+        display: none !important;
     }
 }
