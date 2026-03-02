@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
 
     const primaryAccounts = ["Cash", "HSBC 2Now", "MiCuenta Banamex", "Joy Banamex"];
-    const secondaryAccounts = ["TDC", "Nu Crédito", "Nu Debito", "Azul BBVA", "Libretón BBVA", "Liverpool"];
+    const secondaryAccounts = ["TDCs", "Nu Crédito", "Nu Debito", "Azul BBVA", "Libretón BBVA", "Liverpool"];
 
     // A. LÓGICA PARA TRANSFERENCIAS (From / To)
     fromBtn.addEventListener('click', () => {
