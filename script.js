@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
         flexible: ["Subscriptions", "Clothes", "Swimming", "Gifts", "Jana", "Learning", "Entertainment", "Misc", "Travel", "Gym"],
         income: ["Salary", "Extra", "Investments & Savings", "Previous balance"],
         savings: ["Emergency Fund", "Auto", "Trips", "Guitar", "Jana", "Misc"],
-        loans: ["HSBC 2Now", "Joy Banamex", "Nubank", "Liverpool", "Mercado Crédito", "BBVA Azul"]
+        loans: ["HSBC 2Now", "Joy Banamex", "Nubank", "Liverpool", "Mercado Crédito", "BBVA Azul", "Car Loan"]
     };
 
     cardSubCategory.addEventListener('click', () => {
