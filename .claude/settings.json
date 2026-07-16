@@ -3,7 +3,8 @@
     "allow": [
       "Bash(node test-modals.js)",
       "Bash(taskkill //F //IM node.exe)",
-      "Bash(node test-negative.js)"
+      "Bash(node test-negative.js)",
+      "Bash(node test-enter-submit.js)"
     ]
   }
 }

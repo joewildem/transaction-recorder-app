@@ -659,10 +659,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveBtn.addEventListener('click', saveNote);
 
-        // Enter en el input guarda la nota sin necesidad de dar clic en el botón
+        // Enter en el input guarda la nota sin necesidad de dar clic en el botón.
+        // stopPropagation evita que el Enter también dispare el envío global del formulario.
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
+                e.stopPropagation();
                 saveNote();
             }
         });
@@ -760,6 +762,19 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.classList.remove('card-disabled');
             submitBtnLabel.innerText = originalText;
         });
+    });
+
+    // Enviar el formulario con Enter en cualquier momento.
+    // Excepción: si hay un modal abierto (Nota, listas, Calculadora), dejamos
+    // que cada uno maneje su propio Enter (guardar nota, calcular, etc.)
+    // en vez de disparar también el envío del formulario.
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        if (!modalOverlay.classList.contains('hidden')) return;
+        if (!calcOverlay.classList.contains('hidden')) return;
+
+        e.preventDefault();
+        submitBtn.click();
     });
 
     // Función para limpiar tras guardar
