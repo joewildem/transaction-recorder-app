@@ -83,8 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
     inputAmount.addEventListener('input', (e) => {
         // 1. Limpieza y validación básica
         let rawValue = inputAmount.value.replace(/,/g, '');
-        if (isNaN(rawValue) && rawValue !== ".") rawValue = "";
-        
+
+        // Quitar cualquier caracter que no sea dígito, punto o signo "-"
+        rawValue = rawValue.replace(/[^0-9.\-]/g, '');
+        // El signo "-" solo es válido al inicio (para permitir montos negativos)
+        rawValue = rawValue[0] === '-' ? '-' + rawValue.slice(1).replace(/-/g, '') : rawValue.replace(/-/g, '');
+        // Solo permitir un punto decimal
+        const firstDot = rawValue.indexOf('.');
+        if (firstDot !== -1) {
+            rawValue = rawValue.slice(0, firstDot + 1) + rawValue.slice(firstDot + 1).replace(/\./g, '');
+        }
+
         // 2. Formatear visualmente (poner comas)
         inputAmount.value = formatNumber(rawValue);
         
