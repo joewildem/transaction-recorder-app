@@ -112,76 +112,105 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- D. LÓGICA DE BOTONES DE CALCULADORA (Igual que antes) ---
-    calcButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const num = btn.dataset.num;
-            const op = btn.dataset.op;
+    function performCalcAction(num, op) {
+        if (num !== undefined) {
+            if (currentCalcString === "0" && num !== ".") {
+                currentCalcString = num;
+            } else {
+                currentCalcString += num;
+            }
+        }
+        else if (op) {
+            if (op === 'C') { currentCalcString = "0"; }
+            else if (op === 'del') {
+                currentCalcString = currentCalcString.slice(0, -1);
+                if (currentCalcString === "") currentCalcString = "0";
+            }
+            else if (op === 'neg') {
+                try {
+                    let val = eval(currentCalcString) * -1;
+                    currentCalcString = val.toString();
+                } catch {}
+            }
+            else if (op === '=') {
+                try {
+                    // Lógica de porcentaje y evaluación
+                    let expression = currentCalcString.replace(/(\d+(?:\.\d+)?)([\+\-])(\d+(?:\.\d+)?)%/g, (match, num1, operator, num2) => {
+                        const val1 = parseFloat(num1);
+                        const val2 = parseFloat(num2);
+                        return `${val1}${operator}${(val1 * val2) / 100}`;
+                    });
+                    expression = expression.replace(/%/g, '/100');
 
-            if (num !== undefined) {
-                if (currentCalcString === "0" && num !== ".") {
-                    currentCalcString = num;
-                } else {
-                    currentCalcString += num;
-                }
-            } 
-            else if (op) {
-                if (op === 'C') { currentCalcString = "0"; } 
-                else if (op === 'del') { 
-                    currentCalcString = currentCalcString.slice(0, -1);
-                    if (currentCalcString === "") currentCalcString = "0";
-                } 
-                else if (op === 'neg') { 
-                    try {
-                        let val = eval(currentCalcString) * -1;
-                        currentCalcString = val.toString();
-                    } catch {}
-                } 
-                else if (op === '=') {
-                    try {
-                        // Lógica de porcentaje y evaluación
-                        let expression = currentCalcString.replace(/(\d+(?:\.\d+)?)([\+\-])(\d+(?:\.\d+)?)%/g, (match, num1, operator, num2) => {
-                            const val1 = parseFloat(num1);
-                            const val2 = parseFloat(num2);
-                            return `${val1}${operator}${(val1 * val2) / 100}`;
-                        });
-                        expression = expression.replace(/%/g, '/100');
-                        
-                        let result = eval(expression).toString();
-                        
-                        // Redondeo a 2 decimales si es necesario
-                        if (result.includes('.')) {
-                             result = parseFloat(result).toFixed(2);
-                             if (result.endsWith('.00')) result = result.slice(0, -3);
-                        }
-                        currentCalcString = result;
-                        inputAmount.value = formatNumber(currentCalcString);
-                    } catch { currentCalcString = "Error"; }
-                } 
-                else { // Operadores +, -, *, /
-                    const lastChar = currentCalcString.slice(-1);
-                    if ("+-*/%".includes(lastChar)) {
-                        currentCalcString = currentCalcString.slice(0, -1) + op;
-                    } else {
-                        currentCalcString += op;
+                    let result = eval(expression).toString();
+
+                    // Redondeo a 2 decimales si es necesario
+                    if (result.includes('.')) {
+                         result = parseFloat(result).toFixed(2);
+                         if (result.endsWith('.00')) result = result.slice(0, -3);
                     }
+                    currentCalcString = result;
+                    inputAmount.value = formatNumber(currentCalcString);
+                } catch { currentCalcString = "Error"; }
+            }
+            else { // Operadores +, -, *, /
+                const lastChar = currentCalcString.slice(-1);
+                if ("+-*/%".includes(lastChar)) {
+                    currentCalcString = currentCalcString.slice(0, -1) + op;
+                } else {
+                    currentCalcString += op;
                 }
             }
-            updateCalcDisplay();
+        }
+        updateCalcDisplay();
+    }
+
+    calcButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            performCalcAction(btn.dataset.num, btn.dataset.op);
         });
     });
+
+    function closeCalculator() {
+        calcOverlay.classList.add('hidden');
+        inputAmount.value = formatNumber(currentCalcString);
+    }
 
     // Cerrar calculadora al tocar fuera
     calcOverlay.addEventListener('click', (e) => {
         if (e.target === calcOverlay) {
-             calcOverlay.classList.add('hidden');
-             inputAmount.value = formatNumber(currentCalcString);
+             closeCalculator();
         }
     });
 
     // Botón Done interno de la calculadora
-    document.getElementById('calc-close').addEventListener('click', () => {
-         calcOverlay.classList.add('hidden');
-         inputAmount.value = formatNumber(currentCalcString);
+    document.getElementById('calc-close').addEventListener('click', closeCalculator);
+
+    // --- E. SOPORTE DE TECLADO (Físico / Numpad, estilo calculadora de Windows) ---
+    document.addEventListener('keydown', (e) => {
+        if (calcOverlay.classList.contains('hidden')) return;
+
+        const key = e.key;
+
+        if (/^[0-9]$/.test(key) || key === '.') {
+            e.preventDefault();
+            performCalcAction(key, undefined);
+        } else if (['+', '-', '*', '/', '%'].includes(key)) {
+            e.preventDefault();
+            performCalcAction(undefined, key);
+        } else if (key === 'Enter' || key === '=') {
+            e.preventDefault();
+            performCalcAction(undefined, '=');
+        } else if (key === 'Backspace') {
+            e.preventDefault();
+            performCalcAction(undefined, 'del');
+        } else if (key === 'Delete') {
+            e.preventDefault();
+            performCalcAction(undefined, 'C');
+        } else if (key === 'Escape') {
+            e.preventDefault();
+            closeCalculator();
+        }
     });
 
     window.clearInput = function() {
@@ -354,14 +383,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    closeModalBtn.addEventListener('click', () => { modalOverlay.classList.add('hidden'); });
-    
+    function closeGenericModal() {
+        modalOverlay.classList.add('hidden');
+        // Restaurar tarjeta blanca por seguridad
+        innerModalCard.classList.remove('hidden');
+    }
+
+    closeModalBtn.addEventListener('click', closeGenericModal);
+
     // Light Dismiss (Modificado para ignorar si estamos en modo fecha)
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) {
-             modalOverlay.classList.add('hidden');
-             // Restaurar tarjeta blanca por seguridad
-             innerModalCard.classList.remove('hidden'); 
+             closeGenericModal();
+        }
+    });
+
+    // Cerrar con ESC (cualquier modal genérico: listas, cuentas, nota, etc.)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !modalOverlay.classList.contains('hidden')) {
+            closeGenericModal();
+            if (document.activeElement) document.activeElement.blur();
         }
     });
 
@@ -586,12 +627,12 @@ document.addEventListener('DOMContentLoaded', () => {
         saveBtn.innerText = "Add note";
 
         // 5. Lógica de Guardado
-        saveBtn.addEventListener('click', () => {
+        function saveNote() {
             const val = input.value.trim();
-            
+
             // A. Guardar en input oculto
             noteInputHidden.value = val;
-            
+
             // B. Actualizar la Tarjeta UI
             if (val.length > 0) {
                 // Si el texto es muy largo, mostramos "Texto..." para que quepa
@@ -605,6 +646,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // C. Cerrar Modal
             modalOverlay.classList.add('hidden');
+        }
+
+        saveBtn.addEventListener('click', saveNote);
+
+        // Enter en el input guarda la nota sin necesidad de dar clic en el botón
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                saveNote();
+            }
         });
 
         // 6. Armar todo y mostrar

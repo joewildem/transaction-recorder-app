@@ -676,6 +676,25 @@ input::-webkit-inner-spin-button {
     grid-column: auto; /* Resetear el span 2 anterior */
 }
 
+/* --- CALCULADORA EN ESCRITORIO: Modal centrado (estilo Calculadora de Windows) --- */
+@media (min-width: 481px) {
+    #calculator-overlay {
+        align-items: center;
+    }
+
+    .calculator-container {
+        width: 320px;
+        border-radius: 20px;
+        animation: popIn 0.15s ease-out;
+        box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.6);
+    }
+}
+
+@keyframes popIn {
+    from { transform: scale(0.92); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
 /* --- MODALES RESPONSIVOS --- */
 
 /* Contenedor del contenido del modal */
@@ -911,15 +930,8 @@ input::-webkit-inner-spin-button {
 
 /* --- VISIBILIDAD DE LA CALCULADORA --- */
 
-/* 1. Por defecto (Móvil): El icono es visible */
+/* El icono de la calculadora es visible tanto en móvil como en escritorio */
 .header-icon {
     display: flex; /* O block, según tu alineación */
     cursor: pointer;
-}
-
-/* 2. En Escritorio (Web > 480px): Lo ocultamos */
-@media (min-width: 481px) {
-    .header-icon {
-        display: none !important;
-    }
 }

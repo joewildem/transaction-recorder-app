@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node test-modals.js)",
+      "Bash(taskkill //F //IM node.exe)"
+    ]
+  }
+}
